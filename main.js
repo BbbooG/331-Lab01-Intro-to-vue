@@ -1,52 +1,38 @@
-const { createApp, ref } = Vue
+const {createApp, ref, computed, reactive, toRefs} = Vue   
 
-createApp({
+const app = createApp({
     setup(){
-        const product = ref('Boots')
-        const description = ref('Mother I need to sleep')
-        const image = ref('./assets/images/socks_green.jpg')
-        const inStock = ref(true)
-        const inventory = ref(30)
-        const onSale = ref(true)
-        const details = ref([
-            '50% cotton',
-            '30% wool',
-            '20% polyester'
-        ])
-        const variants = ref([
-            { id: 2234, color: 'green',
-            image: './assets/images/socks_green.jpg'},
-            { id: 2235, color: 'blue',
-            image: './assets/images/socks_blue.jpg'}
-        ])
-        const sizes = ref([
-            {sizes:"S"},
-            {sizes:"M"},
-            {sizes: "L"}
-        ])
-        const cart = ref(0)
-        function addToCart(){
-            cart.value +=1
+        const cart = ref([])
+        const premium = ref(true)
+        function updateCart(id){
+            cart.value.push(id)
         }
-
-            function updateImage(variantImage){
-                image.value = variantImage;
-            }
-
+        function removeCart(id){
+            cart.value.pop(id)
+            
+        }
         return {
-            product,
-            description,
-            image,
-            inStock,
-            inventory,
-            onSale,
-            details,
-            variants,
-            sizes,
             cart,
-            addToCart,
-            updateImage
+            premium,
+            updateCart,
+            removeCart,
+            cartDisplay: computed(() =>
+                    cart.value.reduce((acc, curr) => {
+                        if (acc[curr]) {
+                             acc[curr]++;
+                        } else {
+                            acc[curr] = 1;
+                    }
+                return acc;
+            }, {})
+      ),
         }
     }
+})
 
-}) .mount('#app')
+app.component('product-display', productDisplay)
+app.component('product-details', productDetails)
+app.component('review-form', reviewForm)
+app.component('review-list', reviewList)
+
+app.mount('#app')
